@@ -188,7 +188,7 @@ def plotShortestPath(data):
     coordinate = [[0] * cols] * rows
     coordinate_Name = [[0] * cols] * rows
     # we use this list to get non-repeating elemets
-    list = range(0, 38)
+    list = range(0, len(store))
     ranNum = random.sample(list, 10)
 
     for i in range(0, 10):
@@ -200,25 +200,21 @@ def plotShortestPath(data):
     print("")
 
     # Find distance_matrix
-    coords = []
-    for i in range(0, 10):
-        coords.append(coordinate[i])
-
     distance_matrix = []
 
+    # Calculate Euclidean Distance
     def dist(a, b):
         d = [a[0] - b[0], a[1] - b[1]]
         return sqrt(d[0] * d[0] + d[1] * d[1])
 
-    for i in range(0, 10):
+    for i in range(len(coordinate)):
         ori_des_dis = []
-        for j in range(0, 10):
-            ori_des_dis.append(dist(coords[i], coords[j]))
+        for j in range(len(coordinate)):
+            ori_des_dis.append(dist(coordinate[i], coordinate[j]))
         distance_matrix.append(ori_des_dis)
 
     print(distance_matrix)
 
-    # Calculate Euclidean Distance
 
     # In[79]:
 
@@ -239,7 +235,7 @@ def plotShortestPath(data):
             center_index = i
 
     centreName = ""
-    for j in range(0, 10):
+    for j in range(len(coordinate)):
         if j == center_index:
             center = coordinate[j]
             centreName = coordinate_Name[j]

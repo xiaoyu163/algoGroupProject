@@ -442,12 +442,12 @@ distance_score = min_max_normalisation(distance_list, 0.5)
 # The shorter distance should have higher ranking but when calculate the larger distance will have higher score
 # Therefore, use the total probability that this factor hold to deduct the score get to obtain the actual probability.
 for i in range(len(distance_score)):
-    distance_score[i] = 0.5 - distance_score[i]
+    distance_score[i] = round(0.5 - distance_score[i],4)
 
 # List to store total score of each country
 total_score = [0] * len(country_list)
 for i in range(len(sentiment_score)):
-    total_score[i] = sentiment_score[i] + distance_score[i]
+    total_score[i] = round(sentiment_score[i] + distance_score[i],4)
 
 # Print the unsorted list
 print()

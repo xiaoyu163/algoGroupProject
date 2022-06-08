@@ -359,9 +359,15 @@ def mergeSort(country, sentiment, distance, total):
         mergeSort(L0, L1, L2, L3)
         # Sorting the second half
         mergeSort(R0, R1, R2, R3)
-
+        
+        # i is pointer for L3
+        # j is pointer for R3
+        # k is pointer for output array
         i = j = k = 0
+        
+        # Before reaching either end of L3 or R3
         while i < len(L3) and j < len(R3):
+            # Select the larger element and place into k position of output array
             if L3[i] > R3[j]:
                 total[k] = L3[i]
                 country[k] = L0[i]
@@ -375,7 +381,8 @@ def mergeSort(country, sentiment, distance, total):
                 distance[k] = R2[j]
                 j += 1
             k += 1
-        # Checking if any element was left
+            
+        # Place the remaining element at index k of output array
         while i < len(L3):
             total[k] = L3[i]
             country[k] = L0[i]

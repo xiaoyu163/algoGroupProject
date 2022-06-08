@@ -408,7 +408,7 @@ UK_list = ["UK.txt","UK2.txt","UK3.txt","UK4.txt","UK5.txt"]
 US_list = ["US.txt","US2.txt","US3.txt","US4.txt","US5.txt"]
 FR_list = ["FR.txt","FR2.txt","FR3.txt","FR4.txt","FR5.txt"]
 
-# Store the number of positive words (good local economic and social situation) of each country in sentiment_list
+# Store the number of positive words (good local economic and social situation) in sentiment_list
 sentiment_list = list()
 sentiment_list.append(matching("France",FR_list))
 sentiment_list.append(matching("Malaysia",MY_list))
@@ -435,8 +435,10 @@ distance_list.append(plotShortestPath(
 sentiment_score = min_max_normalisation(sentiment_list, 0.5)
 distance_score = min_max_normalisation(distance_list, 0.5)
 
-# The shorter distance should have higher ranking but when calculate the larger distance will have higher score
-# Therefore, use the total probability that this factor hold to deduct the score get to obtain the actual probability.
+# The shorter distance should have higher ranking but when 
+# calculate the larger distance will have higher score
+# Therefore, use the total probability that this factor hold 
+# to deduct the score get to obtain the actual probability.
 for i in range(len(distance_score)):
     distance_score[i] = round(0.5 - distance_score[i],4)
 

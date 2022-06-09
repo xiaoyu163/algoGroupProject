@@ -408,7 +408,8 @@ UK_list = ["UK.txt","UK2.txt","UK3.txt","UK4.txt","UK5.txt"]
 US_list = ["US.txt","US2.txt","US3.txt","US4.txt","US5.txt"]
 FR_list = ["FR.txt","FR2.txt","FR3.txt","FR4.txt","FR5.txt"]
 
-# Store the number of positive words (good local economic and social situation) in sentiment_list
+# Store the number of positive, negative and neutral words.
+# sentiment_list = {positive,negative,neutral}
 sentiment_list = list()
 sentiment_list.append(matching("France",FR_list))
 sentiment_list.append(matching("Malaysia",MY_list))
@@ -437,7 +438,7 @@ distance_list.append(plotShortestPath(
 distance_list.append(plotShortestPath(
     'https://docs.google.com/spreadsheets/d/e/2PACX-1vQY1F342p3QH2B0xmbPUFjddPe0RJmOCT_HmNWU7QR55FEwhvIbZSEadtJPQ1Ddj1bvaUcNgI_96_q-/pub?output=csv'))
 
-# Calculate probability score for sentiment
+# Calculate normalised probability score for distance
 # Weightage = 0.5
 distance_score = min_max_normalisation(distance_list,0.5)
 

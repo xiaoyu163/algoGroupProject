@@ -175,8 +175,8 @@ def matching(country,textFileList):
     print("Negative words: ", negative_counter)
     print("Neutral words: ", neutral_counter)
     print()
-    mark = (positive_counter / (positive_counter + negative_counter + neutral_counter)) * 100
-    return mark
+    sentiment_list = [positive_counter,negative_counter,neutral_counter]
+    return sentiment_list
 
 
 # Problem 2
@@ -339,7 +339,7 @@ def printList(country, sentiment, distance, total):
     row_labels = [1, 2, 3, 4, 5]
     score_table = pandas.DataFrame(score_table, columns=column_labels, index=row_labels)
     print(score_table)
-
+    print()
 
 # Function to sort the probability of a country to have good local economic and optimal delivery
 def mergeSort(country, sentiment, distance, total):
@@ -416,6 +416,14 @@ sentiment_list.append(matching("Singapore",SG_list))
 sentiment_list.append(matching("United Kingdom",UK_list))
 sentiment_list.append(matching("United States",US_list))
 
+# Calculate probability score for sentiment
+# Assume sentiment is equally important with distance
+# Weightage = 0.5
+sentiment_score = list()
+for i in range (len(sentiment_list)):
+    probability = sentiment_list[i][0]/(sum(sentiment_list[i]))*0.5
+    sentiment_score.append(round(probability,4))
+
 # Store the shortest distance of each country (optimal delivery) in distance_list
 distance_list = list()
 distance_list.append(plotShortestPath(
@@ -429,11 +437,9 @@ distance_list.append(plotShortestPath(
 distance_list.append(plotShortestPath(
     'https://docs.google.com/spreadsheets/d/e/2PACX-1vQY1F342p3QH2B0xmbPUFjddPe0RJmOCT_HmNWU7QR55FEwhvIbZSEadtJPQ1Ddj1bvaUcNgI_96_q-/pub?output=csv'))
 
-
-# Use the min_max_normalisation to calculate the probability of each country to be selected
-# Assume both hold same importance in the ranking
-sentiment_score = min_max_normalisation(sentiment_list, 0.5)
-distance_score = min_max_normalisation(distance_list, 0.5)
+# Calculate probability score for sentiment
+# Weightage = 0.5
+distance_score = min_max_normalisation(distance_list,0.5)
 
 # The shorter distance should have higher ranking but when 
 # calculate the larger distance will have higher score
@@ -452,7 +458,6 @@ print()
 print("Problem 3: ")
 print("Unsorted Ranking Table: ")
 printList(country_list, sentiment_score, distance_score, total_score)
-print()
 
 # Use merge sort to sort according to total_score
 mergeSort(country_list, sentiment_score, distance_score, total_score)

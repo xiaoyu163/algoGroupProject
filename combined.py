@@ -208,7 +208,6 @@ def plotShortestPath(data):
     print("")
 
     # Find distance_matrix
-    #Calculate Euclidean Distance
     lat_long_list = "|".join([f"{l[0]},{l[1]}" for l in coordinate])
     distance_matrix=[]
     URL = ("https://maps.googleapis.com/maps/api/distancematrix/json?language=en-US&units=meters"

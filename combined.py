@@ -293,7 +293,8 @@ def plotShortestPath(data):
 def mapWithRoute(path, coordinate, coordinate_Name, centreName, center):
   gmaps.configure(api_key=API_key)
   fig = gmaps.figure(map_type='ROADMAP')
-
+    
+  print("Path: ")
   for i in range(len(path)-1):
       ori = coordinate[path[i]]
       des = coordinate[path[i+1]]

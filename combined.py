@@ -1,6 +1,10 @@
 # !pip install pandas requests BeautifulSoup4
+!pip install gmaps
 import pandas
 import pandas as pd
+import requests
+import gmaps
+
 import array
 from pickle import NONE
 import re
@@ -11,8 +15,12 @@ import csv
 import random
 from sys import maxsize
 from itertools import permutations
-from math import sqrt
 import numpy
+
+from google.colab import output
+output.enable_custom_widget_manager()
+
+API_key = "AIzaSyCFI1DAgc89wqpetVeDmY6Yql6i72VmL7Y"
 
 nltk.download('punkt')
 from nltk.tokenize import word_tokenize
@@ -201,16 +209,23 @@ def plotShortestPath(data):
 
     # Find distance_matrix
     #Calculate Euclidean Distance
-    def dist(a, b):
-        d = [a[0] - b[0], a[1] - b[1]]
-        return sqrt(d[0] * d[0] + d[1] * d[1])
-    
-    distance_matrix = []
-    for i in range(len(coordinate)):
-        ori_des_dis = []
-        for j in range(len(coordinate)):
-            ori_des_dis.append(dist(coordinate[i], coordinate[j]))
-        distance_matrix.append(ori_des_dis)
+    lat_long_list = "|".join([f"{l[0]},{l[1]}" for l in coordinate])
+    distance_matrix=[]
+    URL = ("https://maps.googleapis.com/maps/api/distancematrix/json?language=en-US&units=meters"
+        +"&origins={}"+'&destinations={}'
+        +'&key={}').format(lat_long_list, lat_long_list, API_key)
+
+    response = requests.request("GET", URL)
+    j_son = response.json() #convert the txt body of response into json format
+    result = j_son['rows']
+
+    for x in result:
+        oriToDest=[]
+        info = x["elements"]
+
+        for dist in info:
+            oriToDest.append(dist['distance']['value'])
+        distance_matrix.append(oriToDest)
 
     print(distance_matrix)
 
@@ -275,40 +290,36 @@ def plotShortestPath(data):
     print(path, min_path)
 
     # print the map without route
-    location = store.Latitude[ranNum[0]], store.Longitude[ranNum[0]]
-    map = f.Map(location=location)
+    gmaps.configure(api_key=API_key)
+             
+    markers = gmaps.marker_layer(coordinate, info_box_content=coordinate_Name)
+    center_markers = gmaps.marker_layer([center],label='C', info_box_content=centreName)
+    fig = gmaps.figure(map_type='ROADMAP')
+    fig.add_layer(markers)
+    fig.add_layer(center_markers)
 
-    for i in range(len(coordinate)):
-        location = store.Latitude[ranNum[i]], store.Longitude[ranNum[i]]
-        print(location)
-        if store.Latitude[ranNum[i]] == center[0]:
-            map.add_child(f.Marker(location, popup=store.Name[ranNum[i]], icon=f.Icon(color='red')))
-        else:
-            map.add_child(f.Marker(location, popup=store.Name[ranNum[i]], icon=f.Icon(color='purple')))
-    map
-
+    fig
+    
     # print the map with route
-    location = store.Latitude[ranNum[i]], store.Longitude[ranNum[i]]
-    map = f.Map(location=location)
+    fig = gmaps.figure(map_type='ROADMAP')
 
-    for i in range(len(path) - 1):
+    for i in range(len(path)-1):
         ori = coordinate[path[i]]
-        des = coordinate[path[i + 1]]
-        storeName = ""
+        des = coordinate[path[i+1]]
         for j in range(len(coordinate)):
             if ori == coordinate[j]:
                 storeName = coordinate_Name[j]
                 print(storeName)
                 break;
-        if i == 0:
-            map.add_child(f.Marker(ori, popup=storeName, icon=f.Icon(color='red')))
-        else:
-            map.add_child(f.Marker(ori, popup=storeName, icon=f.Icon(color='purple')))
+        fig.add_layer(gmaps.directions_layer(ori,des,stroke_color='red',show_markers=False, stroke_weight=2.0, stroke_opacity=1.0))
 
-        f.PolyLine((ori, des)).add_to(map)
 
-    print(coordinate_Name[center_index])
-    map
+    markers = gmaps.marker_layer(coordinate, info_box_content=coordinate_Name)
+    center_markers = gmaps.marker_layer([center],label='C', info_box_content=centreName)
+    fig.add_layer(markers)
+    fig.add_layer(center_markers)
+    
+    fig
 
     return min_path
 

@@ -287,7 +287,7 @@ def plotShortestPath(data):
         path.append(i)
     path.append(center_index)
 
-    return coordinate, coordinate_Name, center, centreName, path, min_path
+    return coordinate, coordinate_Name, center, centreName, path, min_path, distance_matrix
     
 # print the map with route
 def mapWithRoute(path, coordinate, coordinate_Name, centreName, center):
@@ -431,9 +431,10 @@ distance_list = list()
 
 print("FR")
 data = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSL3hIEO010RdV9D7J5v4gFPtKrHecZE40ALyJvMClpzkOwLCjJ-0CxyJ1keJ1W3YrLRSFvHdMn-pPd/pub?gid=0&single=true&output=csv'
-coordinate_FR, coordinate_Name_FR, center_FR, centreName_FR, path_FR, min_path_FR = plotShortestPath(data)
+coordinate_FR, coordinate_Name_FR, center_FR, centreName_FR, path_FR, min_path_FR, distance_matrix_FR = plotShortestPath(data)
 print("Coordinate : ", coordinate_FR, "\n", 
       "Coordinate Name: ", coordinate_Name_FR, "\n", 
+      "Distance Matrix: ", distance_matrix_FR, "\n",
       "Distribution Centre Coordinate: ", center_FR, "\n", 
       "Distribution Centre Name: ", centreName_FR, "\n", 
       "Path: ", path_FR, "\n", 
@@ -444,9 +445,10 @@ mapWithRoute(path_FR, coordinate_FR, coordinate_Name_FR, centreName_FR, center_F
 
 print("GB")
 data = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSdjNHDAM3ta6gFAAsg8kFksBHH8GFpo4bamO0xEl_mXtntW1gVZRvJmxG5fSavZ7QTetknE0T21z4g/pub?output=csv'
-coordinate_GB, coordinate_Name_GB, center_GB, centreName_GB, path_GB, min_path_GB = plotShortestPath(data)
+coordinate_GB, coordinate_Name_GB, center_GB, centreName_GB, path_GB, min_path_GB, distance_matrix_GB = plotShortestPath(data)
 print("Coordinate : ", coordinate_GB, "\n", 
       "Coordinate Name: ", coordinate_Name_GB, "\n", 
+      "Distance Matrix: ", distance_matrix_GB, "\n", 
       "Distribution Centre Coordinate: ", center_GB, "\n", 
       "Distribution Centre Name: ", centreName_GB, "\n", 
       "Path: ", path_GB, "\n", 
@@ -457,9 +459,10 @@ mapWithRoute(path_GB, coordinate_GB, coordinate_Name_GB, centreName_GB, center_G
 
 print("US")
 data = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQY1F342p3QH2B0xmbPUFjddPe0RJmOCT_HmNWU7QR55FEwhvIbZSEadtJPQ1Ddj1bvaUcNgI_96_q-/pub?output=csv'
-coordinate_US, coordinate_Name_US, center_US, centreName_US, path_US, min_path_US = plotShortestPath(data)
+coordinate_US, coordinate_Name_US, center_US, centreName_US, path_US, min_path_US, distance_matrix_US = plotShortestPath(data)
 print("Coordinate : ", coordinate_US, "\n", 
       "Coordinate Name: ", coordinate_Name_US, "\n", 
+      "Distance Matrix: ", distance_matrix_US, "\n",
       "Distribution Centre Coordinate: ", center_US, "\n", 
       "Distribution Centre Name: ", centreName_US, "\n", 
       "Path: ", path_US, "\n", 
@@ -470,9 +473,10 @@ mapWithRoute(path_US, coordinate_US, coordinate_Name_US, centreName_US, center_U
 
 print("MY")
 data = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTrUpg5xoNjC9uzEJwVyHTAc06tv6gAJpJ-6w8_qH7A60fHdLoCFShBpb1-W8ZCQ6dC0mnUFMvyC9Lf/pub?output=csv'
-coordinate_MY, coordinate_Name_MY, center_MY, centreName_MY, path_MY, min_path_MY = plotShortestPath(data)
+coordinate_MY, coordinate_Name_MY, center_MY, centreName_MY, path_MY, min_path_MY, distance_matrix_MY  = plotShortestPath(data)
 print("Coordinate : ", coordinate_MY, "\n", 
       "Coordinate Name: ", coordinate_Name_MY, "\n", 
+      "Distance Matrix: ", distance_matrix_MY, "\n",
       "Distribution Centre Coordinate: ", center_MY, "\n", 
       "Distribution Centre Name: ", centreName_MY, "\n", 
       "Path: ", path_MY, "\n", 
@@ -483,9 +487,10 @@ mapWithRoute(path_MY, coordinate_MY, coordinate_Name_MY, centreName_MY, center_M
 
 print("SG")
 data = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQVq6V5a9G5v86w4Ldn_wGvKrWELtsRvg9esjKF3-aa5M8kVM4BF7yI_tJxgu7QBhabZnjPatolz4Wk/pub?output=csv'
-coordinate_SG, coordinate_Name_SG, center_SG, centreName_SG, path_SG, min_path_SG = plotShortestPath(data)
+coordinate_SG, coordinate_Name_SG, center_SG, centreName_SG, path_SG, min_path_SG, distance_matrix_SG = plotShortestPath(data)
 print("Coordinate : ", coordinate_SG, "\n", 
       "Coordinate Name: ", coordinate_Name_SG, "\n", 
+      "Distance Matrix: ", distance_matrix_MY, "\n",
       "Distribution Centre Coordinate: ", center_SG, "\n", 
       "Distribution Centre Name: ", centreName_SG, "\n", 
       "Path: ", path_SG, "\n", 

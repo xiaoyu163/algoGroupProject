@@ -188,69 +188,70 @@ def matching(country,textFileList):
 
 
 # Problem 2
+def findRandomStores(store, ranNum):
+  rows, cols = (10, 2)
+  coordinate = [[0] * cols] * rows
+  coordinate_Name = [[0]*cols]*rows
+
+  for i in range(0, 10):
+      coordinate[i] = [store.Latitude[ranNum[i]], store.Longitude[ranNum[i]]]
+      coordinate_Name[i] = store.Name[ranNum[i]]
+
+  return coordinate, coordinate_Name
+
+def findDistMatrix(coordinate):
+  lat_long_list = "|".join([f"{l[0]},{l[1]}" for l in coordinate])
+  distance_matrix=[]
+  URL = ("https://maps.googleapis.com/maps/api/distancematrix/json?language=en-US&units=meters"
+        +"&origins={}"+'&destinations={}'
+        +'&key={}').format(lat_long_list, lat_long_list, API_key)
+
+  response = requests.request("GET", URL)
+  j_son = response.json() #convert the txt body of response into json format
+  result = j_son['rows']
+
+  for x in result:
+      oriToDest=[]
+      info = x["elements"]
+
+      for dist in info:
+          oriToDest.append(dist['distance']['value'])
+      distance_matrix.append(oriToDest)
+    
+  return distance_matrix
+
+def findCenter(coordinate, distance_matrix, coordinate_Name):
+  min = 0
+  center_index = 0
+
+  for i in range(len(distance_matrix[0])):
+      min += distance_matrix[0][i]
+
+  for i in range(len(distance_matrix)):
+      dis_travel = 0
+      for j in range(len(distance_matrix[i])):
+          dis_travel += distance_matrix[i][j]
+      if dis_travel < min:
+          min = dis_travel
+          center_index = i
+  
+  centreName = ""
+  for j in range(len(coordinate)):
+      if j == center_index:
+          center = coordinate[j]
+          centreName = coordinate_Name[j]
+
+  return center, center_index, centreName
+
 def plotShortestPath(data):
     store = pd.read_csv(data)
-
-    # Select 10 random stores (FR)
-    rows, cols = (10, 2)
-    coordinate = [[0] * cols] * rows
-    coordinate_Name = [[0] * cols] * rows
     # we use this list to get non-repeating elemets
     list = range(0, len(store))
     ranNum = random.sample(list, 10)
 
-    for i in range(0, 10):
-        coordinate[i] = [store.Latitude[ranNum[i]], store.Longitude[ranNum[i]]]
-        coordinate_Name[i] = store.Name[ranNum[i]]
-        print(coordinate[i], coordinate_Name[i])
-
-    print("10 random store selected")
-    print("")
-
-    # Find distance_matrix
-    lat_long_list = "|".join([f"{l[0]},{l[1]}" for l in coordinate])
-    distance_matrix=[]
-    URL = ("https://maps.googleapis.com/maps/api/distancematrix/json?language=en-US&units=meters"
-        +"&origins={}"+'&destinations={}'
-        +'&key={}').format(lat_long_list, lat_long_list, API_key)
-
-    response = requests.request("GET", URL)
-    j_son = response.json() #convert the txt body of response into json format
-    result = j_son['rows']
-
-    for x in result:
-        oriToDest=[]
-        info = x["elements"]
-
-        for dist in info:
-            oriToDest.append(dist['distance']['value'])
-        distance_matrix.append(oriToDest)
-
-    print(distance_matrix)
-
-    # Find the center
-    min = 0
-    center_index = 0
-    center = coordinate[0]
-
-    for i in range(len(distance_matrix[0])):
-        min += distance_matrix[0][i]
-
-    for i in range(len(distance_matrix)):
-        dis_travel = 0
-        for j in range(len(distance_matrix[i])):
-            dis_travel += distance_matrix[i][j]
-        if dis_travel < min:
-            min = dis_travel
-            center_index = i
-
-    centreName = ""
-    for j in range(len(coordinate)):
-        if j == center_index:
-            center = coordinate[j]
-            centreName = coordinate_Name[j]
-
-    print("Center: ", center, centreName, center_index)
+    coordinate, coordinate_Name = findRandomStores(store, ranNum)
+    distance_matrix = findDistMatrix(coordinate)
+    center, center_index, centreName = findCenter(coordinate, distance_matrix, coordinate_Name)
 
     # implementation of traveling Salesman Problem
     # store all vertex apart from source vertex
@@ -286,42 +287,31 @@ def plotShortestPath(data):
         path.append(i)
     path.append(center_index)
 
-    print(path, min_path)
-
-    # print the map without route
-    gmaps.configure(api_key=API_key)
-             
-    markers = gmaps.marker_layer(coordinate, info_box_content=coordinate_Name)
-    center_markers = gmaps.marker_layer([center],label='C', info_box_content=centreName)
-    fig = gmaps.figure(map_type='ROADMAP')
-    fig.add_layer(markers)
-    fig.add_layer(center_markers)
-
-    fig
+    return coordinate, coordinate_Name, center, centreName, path, min_path
     
-    # print the map with route
-    fig = gmaps.figure(map_type='ROADMAP')
+# print the map with route
+def mapWithRoute(path, coordinate, coordinate_Name, centreName, center):
+  gmaps.configure(api_key=API_key)
+  fig = gmaps.figure(map_type='ROADMAP')
 
-    for i in range(len(path)-1):
-        ori = coordinate[path[i]]
-        des = coordinate[path[i+1]]
-        for j in range(len(coordinate)):
-            if ori == coordinate[j]:
-                storeName = coordinate_Name[j]
-                print(storeName)
-                break;
-        fig.add_layer(gmaps.directions_layer(ori,des,stroke_color='red',show_markers=False, stroke_weight=2.0, stroke_opacity=1.0))
+  for i in range(len(path)-1):
+      ori = coordinate[path[i]]
+      des = coordinate[path[i+1]]
+      for j in range(len(coordinate)):
+          if ori == coordinate[j]:
+              storeName = coordinate_Name[j]
+              print(storeName)
+              break;
+      fig.add_layer(gmaps.directions_layer(ori,des,stroke_color='red',show_markers=False, stroke_weight=2.0, stroke_opacity=1.0))
 
+  print(centreName)
 
-    markers = gmaps.marker_layer(coordinate, info_box_content=coordinate_Name)
-    center_markers = gmaps.marker_layer([center],label='C', info_box_content=centreName)
-    fig.add_layer(markers)
-    fig.add_layer(center_markers)
+  markers = gmaps.marker_layer(coordinate, info_box_content=coordinate_Name)
+  center_markers = gmaps.marker_layer([center],label='C', info_box_content=centreName)
+  fig.add_layer(markers)
+  fig.add_layer(center_markers)
     
-    fig
-
-    return min_path
-
+  return fig
 
 # Problem 3
 
@@ -437,16 +427,71 @@ for i in range (len(sentiment_list)):
 
 # Store the shortest distance of each country (optimal delivery) in distance_list
 distance_list = list()
-distance_list.append(plotShortestPath(
-    'https://docs.google.com/spreadsheets/d/e/2PACX-1vSL3hIEO010RdV9D7J5v4gFPtKrHecZE40ALyJvMClpzkOwLCjJ-0CxyJ1keJ1W3YrLRSFvHdMn-pPd/pub?output=csv'))
-distance_list.append(plotShortestPath(
-    'https://docs.google.com/spreadsheets/d/e/2PACX-1vTrUpg5xoNjC9uzEJwVyHTAc06tv6gAJpJ-6w8_qH7A60fHdLoCFShBpb1-W8ZCQ6dC0mnUFMvyC9Lf/pub?output=csv'))
-distance_list.append(plotShortestPath(
-    'https://docs.google.com/spreadsheets/d/e/2PACX-1vQVq6V5a9G5v86w4Ldn_wGvKrWELtsRvg9esjKF3-aa5M8kVM4BF7yI_tJxgu7QBhabZnjPatolz4Wk/pub?output=csv'))
-distance_list.append(plotShortestPath(
-    'https://docs.google.com/spreadsheets/d/e/2PACX-1vSdjNHDAM3ta6gFAAsg8kFksBHH8GFpo4bamO0xEl_mXtntW1gVZRvJmxG5fSavZ7QTetknE0T21z4g/pub?output=csv'))
-distance_list.append(plotShortestPath(
-    'https://docs.google.com/spreadsheets/d/e/2PACX-1vQY1F342p3QH2B0xmbPUFjddPe0RJmOCT_HmNWU7QR55FEwhvIbZSEadtJPQ1Ddj1bvaUcNgI_96_q-/pub?output=csv'))
+
+print("FR")
+data = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSL3hIEO010RdV9D7J5v4gFPtKrHecZE40ALyJvMClpzkOwLCjJ-0CxyJ1keJ1W3YrLRSFvHdMn-pPd/pub?gid=0&single=true&output=csv'
+coordinate_FR, coordinate_Name_FR, center_FR, centreName_FR, path_FR, min_path_FR = plotShortestPath(data)
+print("Coordinate : ", coordinate_FR, "\n", 
+      "Coordinate Name: ", coordinate_Name_FR, "\n", 
+      "Distribution Centre Coordinate: ", center_FR, "\n", 
+      "Distribution Centre Name: ", centreName_FR, "\n", 
+      "Path: ", path_FR, "\n", 
+      "Minimum Path Cost: ", min_path_FR,
+      "\n")
+distance_list.append(min_path_FR)
+mapWithRoute(path_FR, coordinate_FR, coordinate_Name_FR, centreName_FR, center_FR)
+
+print("GB")
+data = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSdjNHDAM3ta6gFAAsg8kFksBHH8GFpo4bamO0xEl_mXtntW1gVZRvJmxG5fSavZ7QTetknE0T21z4g/pub?output=csv'
+coordinate_GB, coordinate_Name_GB, center_GB, centreName_GB, path_GB, min_path_GB = plotShortestPath(data)
+print("Coordinate : ", coordinate_GB, "\n", 
+      "Coordinate Name: ", coordinate_Name_GB, "\n", 
+      "Distribution Centre Coordinate: ", center_GB, "\n", 
+      "Distribution Centre Name: ", centreName_GB, "\n", 
+      "Path: ", path_GB, "\n", 
+      "Minimum Path Cost: ", min_path_GB,
+      "\n")
+distance_list.append(min_path_GB)
+mapWithRoute(path_GB, coordinate_GB, coordinate_Name_GB, centreName_GB, center_GB)
+
+print("US")
+data = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQY1F342p3QH2B0xmbPUFjddPe0RJmOCT_HmNWU7QR55FEwhvIbZSEadtJPQ1Ddj1bvaUcNgI_96_q-/pub?output=csv'
+coordinate_US, coordinate_Name_US, center_US, centreName_US, path_US, min_path_US = plotShortestPath(data)
+print("Coordinate : ", coordinate_US, "\n", 
+      "Coordinate Name: ", coordinate_Name_US, "\n", 
+      "Distribution Centre Coordinate: ", center_US, "\n", 
+      "Distribution Centre Name: ", centreName_US, "\n", 
+      "Path: ", path_US, "\n", 
+      "Minimum Path Cost: ", min_path_US,
+      "\n")
+distance_list.append(min_path_US)
+mapWithRoute(path_US, coordinate_US, coordinate_Name_US, centreName_US, center_US)
+
+print("MY")
+data = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTrUpg5xoNjC9uzEJwVyHTAc06tv6gAJpJ-6w8_qH7A60fHdLoCFShBpb1-W8ZCQ6dC0mnUFMvyC9Lf/pub?output=csv'
+coordinate_MY, coordinate_Name_MY, center_MY, centreName_MY, path_MY, min_path_MY = plotShortestPath(data)
+print("Coordinate : ", coordinate_MY, "\n", 
+      "Coordinate Name: ", coordinate_Name_MY, "\n", 
+      "Distribution Centre Coordinate: ", center_MY, "\n", 
+      "Distribution Centre Name: ", centreName_MY, "\n", 
+      "Path: ", path_MY, "\n", 
+      "Minimum Path Cost: ", min_path_MY,
+      "\n")
+distance_list.append(min_path_MY)
+mapWithRoute(path_MY, coordinate_MY, coordinate_Name_MY, centreName_MY, center_MY)
+
+print("SG")
+data = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQVq6V5a9G5v86w4Ldn_wGvKrWELtsRvg9esjKF3-aa5M8kVM4BF7yI_tJxgu7QBhabZnjPatolz4Wk/pub?output=csv'
+coordinate_SG, coordinate_Name_SG, center_SG, centreName_SG, path_SG, min_path_SG = plotShortestPath(data)
+print("Coordinate : ", coordinate_SG, "\n", 
+      "Coordinate Name: ", coordinate_Name_SG, "\n", 
+      "Distribution Centre Coordinate: ", center_SG, "\n", 
+      "Distribution Centre Name: ", centreName_SG, "\n", 
+      "Path: ", path_SG, "\n", 
+      "Minimum Path Cost: ", min_path_SG,
+      "\n")
+distance_list.append(min_path_SG)
+mapWithRoute(path_SG, coordinate_SG, coordinate_Name_SG, centreName_SG, center_SG)
 
 # Calculate normalised probability score for distance
 # Weightage = 0.5

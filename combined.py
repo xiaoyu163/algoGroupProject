@@ -1,5 +1,5 @@
 # !pip install pandas requests BeautifulSoup4
-!pip install gmaps
+# !pip install gmaps
 import pandas
 import pandas as pd
 import requests

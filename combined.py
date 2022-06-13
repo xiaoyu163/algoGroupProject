@@ -134,7 +134,7 @@ def readFile(wordFile):
         data.strip
     return data
 
-def matchingCountryList(country,textFileList,countrylist):
+def matching(country,textFileList,countrylist):
     global positive_counter, negative_counter, neutral_counter
     positive_counter = 0
     negative_counter = 0
@@ -183,50 +183,6 @@ def matchingCountryList(country,textFileList,countrylist):
     })
     return countrylist
     
-def matching(country,textFileList):
-    global positive_counter, negative_counter, neutral_counter
-    positive_counter = 0
-    negative_counter = 0
-    neutral_counter = 0
-    for j in range(len(textFileList)):
-        textFile = textFileList[j]
-        data = pd.read_csv(textFile, sep='t')
-        # print(data.head())
-        mydata = data.drop('Unnamed: 0', axis=1)
-        # print(mydata.head())
-
-        # clean text
-        mydata['Cleaned words'] = mydata['words'].apply(clean)
-        # print(mydata.head())
-
-        # POS tagged and remove stop words
-        mydata['POS tagged'] = mydata['Cleaned words'].apply(token_stop_pos)
-        # print(mydata.head())
-
-        mydata['Lemma'] = mydata['POS tagged'].apply(lemmatize)
-        # print(mydata.head())
-
-        # print(len(mydata.index))
-        positive_words = readFile('positive word.txt')
-        negative_words = readFile('negative word.txt')
-        i = 0
-        while i < len(mydata.index):
-            val = mydata['Lemma'].values[i]
-            if pd.isnull(mydata.loc[i, 'Lemma']):
-                i += 1
-                continue
-            else:
-                i += 1
-                if (KMPSearch(val, positive_words)):
-                    positive_counter += 1
-                elif (KMPSearch(val, negative_words)):
-                    negative_counter += 1
-                else:
-                    neutral_counter += 1
-
-    sentiment_list = [positive_counter,negative_counter,neutral_counter]
-    return sentiment_list
-
 def plotGraph(countrylist,count):
 	country = [countrylist[0]['name'], countrylist[1]['name'], countrylist[2]['name'], countrylist[3]['name'], countrylist[4]['name']]
 	dict_of_fig = dict({"data":[
@@ -470,11 +426,11 @@ FR_list = ["FR.txt","FR2.txt","FR3.txt","FR4.txt","FR5.txt"]
 
 #matchingCountryList
 countrylist= []
-countrylist = matchingCountryList("France",FR_list,countrylist)
-countrylist = matchingCountryList("Malaysia",MY_list,countrylist)
-countrylist = matchingCountryList("Singapore",SG_list,countrylist)
-countrylist = matchingCountryList("United Kingdom",UK_list,countrylist)
-countrylist = matchingCountryList("United States",US_list,countrylist)
+countrylist = matching("France",FR_list,countrylist)
+countrylist = matching("Malaysia",MY_list,countrylist)
+countrylist = matching("Singapore",SG_list,countrylist)
+countrylist = matching("United Kingdom",UK_list,countrylist)
+countrylist = matching("United States",US_list,countrylist)
 
 # plot Graphs        
 plotGraph(countrylist,"Positive Word Count")

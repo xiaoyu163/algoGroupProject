@@ -4,6 +4,7 @@ import pandas
 import pandas as pd
 import requests
 import gmaps
+import plotly.graph_objects as go
 
 import array
 from pickle import NONE

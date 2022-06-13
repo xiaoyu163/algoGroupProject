@@ -192,7 +192,7 @@ def plotGraph(countrylist,count):
 	fig.update_yaxes(title_text='Counts')
 	fig.show()
 
-def plotMark(countrylist,percentage):
+def plotPercentageGraph(countrylist,percentage):
 	country = [countrylist[0]['name'], countrylist[1]['name'], countrylist[2]['name'], countrylist[3]['name'], countrylist[4]['name']]
 	dict_of_fig = dict({"data":[
 		{"type": "bar", "x": [countrylist[0]['name'], countrylist[1]['name'], countrylist[2]['name'], countrylist[3]['name'], countrylist[4]['name']], "y": [percentage[0], percentage[1], percentage[2], percentage[3], percentage[4]]}], "layout": {"title": {"text": "Graph of Percentage of Positive Word Count with respect to Total Word Counts"}}})
@@ -437,12 +437,13 @@ plotGraph(countrylist,"Positive Word Count")
 plotGraph(countrylist,"Negative Word Count")
 plotGraph(countrylist,"Neutral Word Count")
 
-# calculate the Percentage of Positive Word Count with respect to Total Positive and Negative Word Counts
+# calculate the Percentage of Positive Word Count with respect to Total Word Counts
 percentage = []
 for y in range(len(countrylist)):
     percentage.append((countrylist[y]["Positive Word Count"])/(countrylist[y]["Positive Word Count"]+countrylist[y]["Negative Word Count"]+countrylist[y]["Neutral Word Count"])*100)
-# plot the Graph of Percentage of Positive Word Count with respect to Total Positive and Negative Word Counts
-plotMark(countrylist,percentage)
+
+# plot the Graph of Percentage of Positive Word Count with respect to Total Word Counts
+plotPercentageGraph(countrylist,percentage)
 
 # Calculate probability score for sentiment
 # Assume sentiment is equally important with distance
